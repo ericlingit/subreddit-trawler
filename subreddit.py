@@ -1,8 +1,9 @@
 import json
 import pickle
+import time
 from dataclasses import asdict, dataclass
 from enum import Enum
-from typing import List
+from typing import Callable, List
 
 import requests
 from requests import Response
@@ -25,33 +26,10 @@ headers = {
     "Sec-Fetch-Site": "cross-site",
     "Sec-GPC": "1",
 }
-# url = "https://old.reddit.com/r/China_irl/"
-# url = "https://old.reddit.com/r/CombatFootage/"
 
-# Rate-limit: no more than 3 requests per second.
-
-# # Capture subreddit snapshot.
-# resp = requests.get(url, headers=headers)
-# with open("subreddit_CombatFootage.pickle", "wb") as fh:
-#     pickle.dump(resp, fh)
-
-# Load subreddit snapshot.
-with open("subreddit_CombatFootage.pickle", "rb") as fh:
-    resp: Response = pickle.load(fh)
-
-soup = BeautifulSoup(resp.content, "lxml")
-# print(soup.text)
-listing: List[Tag] = soup.find_all(class_="linklisting")
-assert (
-    len(listing) == 1
-), "not found: <div id='siteTable' class='sitetable linklisting'>"
-
-
-# Extract all links.
-listing_div: Tag = listing.pop()
-all_posts: List[Tag] = listing_div.find_all(class_="link")
-assert len(all_posts) > 0, "found no posts"
-print(len(all_posts))
+# As a reminder to developers, we recommend that clients make no more than one
+# request every two seconds (http://github.com/reddit/reddit/wiki/API).
+rate_limit = 3.0
 
 
 class PostType(Enum):
@@ -80,6 +58,9 @@ class PostLink:
         return json.dumps(
             asdict(self), ensure_ascii=False, indent=4, default=lambda x: x.value
         )
+
+    def __str__(self) -> str:
+        return self.to_json_str()
 
 
 def collect_links(all_posts: List[Tag]) -> List[PostLink]:
@@ -125,3 +106,49 @@ def collect_links(all_posts: List[Tag]) -> List[PostLink]:
         )
         posts.append(p)
     return posts
+
+
+def walk_subreddit(url: str, processor: Callable[[PostLink], None]) -> None:
+    """Walk the subreddit at url until there are no more posts. Each post is
+    passed to processor for processing.
+    """
+    # Go to url.
+    print(f"visiting {url}")
+    resp = requests.get(url, headers=headers)
+    soup = BeautifulSoup(resp.content, "lxml")
+
+    # Extract all links.
+    listing: List[Tag] = soup.find_all(class_="linklisting")
+    assert (
+        len(listing) == 1
+    ), "not found: <div id='siteTable' class='sitetable linklisting'>"
+    listing_div: Tag = listing.pop()
+    all_links: List[Tag] = listing_div.find_all(class_="link")
+    assert len(all_links) > 0, "found no posts"
+    print(f"found {len(all_links)} links")
+    posts = collect_links(all_links)
+    print(f"collected {len(posts)} PostLinks")
+
+    # Visit post to scrape its content and comments.
+    for post in posts:
+        processor(post)
+        time.sleep(0.1)
+
+    # Find the "next" button and its URL.
+    next = soup.select("span.next-button a")
+    if len(next) != 1:
+        print("reached end of subreddit")
+        return
+    next_url = next.pop().get("href", "")
+    print(f"next: {next_url}")
+
+    # Go to next page.
+    time.sleep(rate_limit)
+    walk_subreddit(next_url, processor)
+
+
+if __name__ == "__main__":
+    # url = "https://old.reddit.com/r/China_irl/"
+    # url = "https://old.reddit.com/r/CombatFootage/"
+    url = "https://old.reddit.com/r/zenfone6/"
+    walk_subreddit(url, print)
