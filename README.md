@@ -55,9 +55,9 @@ When you forget to change user-agent:
 
 <body>
     <h1>whoa there, pardner!</h1>
-    <p>we\'re sorry, but you appear to be a bot and we\'ve seen too many requestsfrom you lately. we enforce a hard
+    <p>we're sorry, but you appear to be a bot and we've seen too many requests from you lately. we enforce a hard
         speed limit on requests that appear to comefrom bots to prevent abuse.</p>
-    <p>if you are not a bot but are spoofing one via your browser\'s user agentstring: please change your user agent
+    <p>if you are not a bot but are spoofing one via your browser's user agentstring: please change your user agent
         string to avoid seeing this messageagain.</p>
     <p>please wait 1 second(s) and try again.</p>
     <p>as a reminder to developers, we recommend that clients make no more than <a
