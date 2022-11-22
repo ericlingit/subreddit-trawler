@@ -1,5 +1,4 @@
 import json
-import pickle
 import time
 from dataclasses import asdict, dataclass
 from enum import Enum
@@ -29,7 +28,7 @@ headers = {
 
 # As a reminder to developers, we recommend that clients make no more than one
 # request every two seconds (http://github.com/reddit/reddit/wiki/API).
-rate_limit = 3.0
+RATE_LIMIT = 3.0
 
 
 class PostType(Enum):
@@ -111,39 +110,38 @@ def collect_links(all_posts: List[Tag]) -> List[PostLink]:
 def walk_subreddit(url: str, processor: Callable[[PostLink], None]) -> None:
     """Walk the subreddit at url until there are no more posts. Each post is
     passed to processor for processing.
+    Advertisement and announcement posts are skipped.
     """
     # Go to url.
-    print(f"visiting {url}")
-    resp = requests.get(url, headers=headers)
+    resp: Response = requests.get(url, headers=headers)
     soup = BeautifulSoup(resp.content, "lxml")
 
     # Extract all links.
     listing: List[Tag] = soup.find_all(class_="linklisting")
-    assert (
-        len(listing) == 1
-    ), "not found: <div id='siteTable' class='sitetable linklisting'>"
+    if len(listing) != 1:
+        raise Exception(
+            f"could not locate the div tag with linklisting class attribute: {url}"
+        )
     listing_div: Tag = listing.pop()
     all_links: List[Tag] = listing_div.find_all(class_="link")
-    assert len(all_links) > 0, "found no posts"
-    print(f"found {len(all_links)} links")
+    if len(all_links) < 1:
+        raise Exception(f"found no posts: {url}")
     posts = collect_links(all_links)
-    print(f"collected {len(posts)} PostLinks")
 
-    # Visit post to scrape its content and comments.
+    # Process each post with processor function.
     for post in posts:
         processor(post)
-        time.sleep(0.1)
+        time.sleep(RATE_LIMIT)
 
     # Find the "next" button and its URL.
     next = soup.select("span.next-button a")
     if len(next) != 1:
-        print("reached end of subreddit")
+        print(f"reached end of subreddit: {url}")
         return
     next_url = next.pop().get("href", "")
-    print(f"next: {next_url}")
 
     # Go to next page.
-    time.sleep(rate_limit)
+    time.sleep(RATE_LIMIT)
     walk_subreddit(next_url, processor)
 
 
