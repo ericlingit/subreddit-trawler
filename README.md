@@ -12,12 +12,12 @@ https://old.reddit.com/r/China_irl/
     - visit each post link
         - skip announcement
             - if the url contains `predictions?tournament`, always skip this link. no old version is available.
-                - eg: `https://www.reddit.com/r/China_irl/predictions/?tournament=tnmt-9458496b-ea9f-49d8-90f4-ddbad8772459`
+                - eg: `https://www.reddit.com/r/wallstreetbets/predictions?tournament=tnmt-0b14066a-ad68-4351-8261-d1c0740c44d2`
         - scrape comments
             - submit text
             - submit image
             - submit video
-            - nsfw
+            - nsfw/spoiler
 
 - find next button
     - extract link
@@ -25,7 +25,15 @@ https://old.reddit.com/r/China_irl/
     - repeat above
 
 
-## notes
+## Notes
+
+The "next" button element:
+
+```html
+<span class="next-button">
+    <a href="https://old.reddit.com/r/Music/?count=25&after=t3_z1lqur" rel="nofollow next">next ›</a>
+</span>
+```
 
 The element that lists all posts:
 
