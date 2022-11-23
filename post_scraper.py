@@ -28,7 +28,15 @@ class Content:
     video: Optional[Video]
 
 
-def parse_post_content(soup: BeautifulSoup, metadata: PostMetadata) -> Content:
+def parse_post_content(raw_response: bytes, metadata: PostMetadata) -> Content:
+    """Parse the raw response of a subreddit post. `raw_response` should be the
+    response data (e.g., the `request.Response.content` attribute) of a GET
+    request to a URL like this:
+
+    https://old.reddit.com/r/Subreddit_name/comments/abcxyz/op_title/
+    """
+    soup = BeautifulSoup(raw_response, "lxml")
+
     # Title.
     title: str = ""
     maybe_title: List[Tag] = soup.select("p.title a.title")
@@ -43,7 +51,7 @@ def parse_post_content(soup: BeautifulSoup, metadata: PostMetadata) -> Content:
         flare_tag = maybe_flare.pop()
         flare = flare_tag.text.strip()
 
-    # Comments, including opening poster's comment (reply structure not preserved).
+    # Comments, including OP's comment (reply structure not preserved).
     maybe_comments = soup.select("div.entry div.usertext-body div.md p")
     comments: List[str] = [
         p_tag.text.strip()
@@ -51,7 +59,7 @@ def parse_post_content(soup: BeautifulSoup, metadata: PostMetadata) -> Content:
         if p_tag.text.strip() != "[removed]"
     ]
 
-    # OP video (get link from PostLink object)
+    # OP video.
     video: Optional[Video] = None
     if metadata.type is PostType.Video:
         # Transform from "https://v.redd.it/abc123xyz"
@@ -62,7 +70,7 @@ def parse_post_content(soup: BeautifulSoup, metadata: PostMetadata) -> Content:
             audio_track=f"{metadata.url}/DASH_audio.mp4",
         )
 
-    # OP image (get link from PostLink object)
+    # OP image.
     images: List[str] = []
     if metadata.type is PostType.Image:
         images.append(metadata.url)
@@ -168,14 +176,13 @@ if __name__ == "__main__":
     )
 
     # # Visit post
-    # resp = requests.get(sample_image.permalink, headers=headers)
-    # with open("post_image.pickle", "wb") as fh:
+    # resp = requests.get(sample_video.permalink, headers=headers)
+    # with open("post_video.pickle", "wb") as fh:
     #     pickle.dump(resp, fh)
 
     # Load page snapshot.
-    with open("post_image.pickle", "rb") as fh:
+    with open("post_video.pickle", "rb") as fh:
         resp: Response = pickle.load(fh)
 
-    soup = BeautifulSoup(resp.content, "lxml")
-    c = parse_post_content(soup, sample_image)
+    c = parse_post_content(resp.content, sample_video)
     print(c)
