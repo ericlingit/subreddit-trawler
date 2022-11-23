@@ -24,8 +24,106 @@ https://old.reddit.com/r/China_irl/
     - go to link
     - repeat above
 
+Examples for various post types:
+- [Text post](https://old.reddit.com/r/China_irl/comments/z0oio5)
+- [Image post](https://old.reddit.com/r/China_irl/comments/z0ojwn)
+- [Video post](https://old.reddit.com/r/China_irl/comments/yzv625)
+- [Gallery](https://old.reddit.com/r/China_irl/comments/z0728o)
+- [NSFW text (Whats the most NSFW experience you witnessed right in front of your eyes?)](https://old.reddit.com/r/AskReddit/comments/z0uq39)
+- [NSFW image (Grown man ass-kissing)](https://www.reddit.com/r/cringepics/comments/z0xhwy)
+- [NSFW video (Ukrainian drone flies right into the Russian trench)](https://old.reddit.com/r/CombatFootage/comments/z1391l)
 
 ## Notes
+
+Sample video PostLink:
+
+```json
+{
+    "id": "z09a7r",
+    "author": "Dry_Illustrator5642",
+    "timestamp": 1668963979000,
+    "url": "https://v.redd.it/4huchegx4x0a1",
+    "permalink": "https://old.reddit.com/r/China_irl/comments/z09a7r/翼刀性感电臀舞/",
+    "domain": "v.redd.it",
+    "comments_count": 1,
+    "score": 0,
+    "nsfw": false,
+    "spoiler": false,
+    "type": "video"
+}
+```
+
+Actual downloadable video addr: `https://v.redd.it/4huchegx4x0a1/DASH_720.mp4`
+Audio addr: `https://v.redd.it/4huchegx4x0a1/DASH_audio.mp4`
+
+
+Sample image PostLink:
+
+```json
+{
+    "id": "wv4ydl",
+    "author": "darkyknight01",
+    "timestamp": 1661201834000,
+    "url": "https://i.redd.it/6b66lj3fwbj91.jpg",
+    "permalink": "https://old.reddit.com/r/zenfone6/comments/wv4ydl/in_delhi_i_need_info_for_that_how_should_i/",
+    "domain": "i.redd.it",
+    "comments_count": 1,
+    "score": 1,
+    "nsfw": false,
+    "spoiler": false,
+    "type": "image"
+}
+```
+
+Sample text PostLink:
+
+```json
+{
+    "id": "xg61f6",
+    "author": "silver2006",
+    "timestamp": 1663370013000,
+    "url": "/r/zenfone6/comments/xg61f6/need_help_unlocking_the_bootloader/",
+    "permalink": "https://old.reddit.com/r/zenfone6/comments/xg61f6/need_help_unlocking_the_bootloader/",
+    "domain": "self.zenfone6",
+    "comments_count": 4,
+    "score": 1,
+    "nsfw": false,
+    "spoiler": false,
+    "type": "text"
+}
+```
+
+Sample link PostLink:
+
+```json
+{
+    "id": "z2bhbm",
+    "author": "Counterhaters",
+    "timestamp": 1669166866000,
+    "url": "https://www.zaobao.com.sg/realtime/china/story20221122-1335992",
+    "permalink": "https://old.reddit.com/r/China_irl/comments/z2bhbm/消息中国拟对蚂蚁处以逾10亿美元罚款/",
+    "domain": "zaobao.com.sg",
+    "comments_count": 1,
+    "score": 4,
+    "nsfw": false,
+    "spoiler": false,
+    "type": "link"
+}
+```
+
+Gallery element:
+
+```html
+<div class="media-gallery">
+    <div class="gallery-tiles">
+        <div class="gallery-tile gallery-navigation">
+            <div class="media-preview-content gallery-tile-content">
+                <img class="preview", src="...", width=..., height=...>
+            </div>
+        </div>
+    </div>
+</div>
+```
 
 The "next" button element:
 
