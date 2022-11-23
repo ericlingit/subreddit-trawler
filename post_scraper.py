@@ -2,12 +2,11 @@ from dataclasses import dataclass
 from typing import List, Optional
 from urllib import parse
 
-import requests
 from bs4 import BeautifulSoup
 from bs4.element import Tag
 from requests import Response
 
-from subreddit import PostMetadata, PostType, headers
+from subreddit import PostMetadata, PostType
 
 
 @dataclass
@@ -176,6 +175,8 @@ if __name__ == "__main__":
     )
 
     # # Visit post
+    # import requests
+    # from subreddit import headers
     # resp = requests.get(sample_video.permalink, headers=headers)
     # with open("post_video.pickle", "wb") as fh:
     #     pickle.dump(resp, fh)
