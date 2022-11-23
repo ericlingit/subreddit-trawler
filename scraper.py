@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from bs4.element import Tag
 from requests import Response
 
-from subreddit import PostMetadata, PostType
+from walker import PostMetadata, PostType
 
 
 @dataclass
@@ -32,7 +32,9 @@ def parse_post_content(raw_response: bytes, metadata: PostMetadata) -> Content:
     response data (e.g., the `request.Response.content` attribute) of a GET
     request to a URL like this:
 
-    https://old.reddit.com/r/Subreddit_name/comments/abcxyz/op_title/
+        https://old.reddit.com/r/Subreddit_name/comments/abcxyz/op_title/
+
+    Only comments on the first page are scraped. Deep threads aren't followed.
     """
     soup = BeautifulSoup(raw_response, "lxml")
 
@@ -174,16 +176,16 @@ if __name__ == "__main__":
         type=PostType.Video,
     )
 
-    # # Visit post
+    # Visit post
     # import requests
     # from subreddit import headers
-    # resp = requests.get(sample_video.permalink, headers=headers)
-    # with open("post_video.pickle", "wb") as fh:
+    # resp = requests.get(sample_link.permalink, headers=headers)
+    # with open("post_link.pickle", "wb") as fh:
     #     pickle.dump(resp, fh)
 
     # Load page snapshot.
-    with open("post_video.pickle", "rb") as fh:
+    with open("post_link.pickle", "rb") as fh:
         resp: Response = pickle.load(fh)
 
-    c = parse_post_content(resp.content, sample_video)
+    c = parse_post_content(resp.content, sample_link)
     print(c)
