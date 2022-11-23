@@ -40,7 +40,7 @@ class PostType(Enum):
 
 
 @dataclass
-class PostLink:
+class PostMetadata:
     id: str
     author: str
     timestamp: int
@@ -62,12 +62,12 @@ class PostLink:
         return self.to_json_str()
 
 
-def collect_links(all_posts: List[Tag]) -> List[PostLink]:
+def collect_links(all_posts: List[Tag]) -> List[PostMetadata]:
     """Parse all_posts (a list of bs4.element.Tag objects) and return a list
     of PostLink objects.
     """
     # Collect links to posts.
-    posts: List[PostLink] = []
+    posts: List[PostMetadata] = []
     for post in all_posts:
         # Skip ads or announcements.
         class_attr: List[str] = post.get_attribute_list("class")
@@ -90,7 +90,7 @@ def collect_links(all_posts: List[Tag]) -> List[PostLink]:
         else:
             post_type = PostType.Link
 
-        p = PostLink(
+        p = PostMetadata(
             id=post_id,
             author=post.get("data-author", ""),
             timestamp=int(post.get("data-timestamp", -1)),  # eg: "1669002431000"
@@ -107,7 +107,7 @@ def collect_links(all_posts: List[Tag]) -> List[PostLink]:
     return posts
 
 
-def walk_subreddit(url: str, processor: Callable[[PostLink], None]) -> None:
+def walk_subreddit(url: str, processor: Callable[[PostMetadata], None]) -> None:
     """Walk the subreddit at url until there are no more posts. Each post is
     passed to processor for processing.
     Advertisement and announcement posts are skipped.

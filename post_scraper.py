@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Optional, Tuple
+from typing import List, Optional
 from urllib import parse
 
 import requests
@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from bs4.element import Tag
 from requests import Response
 
-from subreddit import PostLink, PostType, headers
+from subreddit import PostMetadata, PostType, headers
 
 
 @dataclass
@@ -28,7 +28,7 @@ class Content:
     video: Optional[Video]
 
 
-def parse_post_content(soup: BeautifulSoup, metadata: PostLink) -> Content:
+def parse_post_content(soup: BeautifulSoup, metadata: PostMetadata) -> Content:
     # Title.
     title: str = ""
     maybe_title: List[Tag] = soup.select("p.title a.title")
@@ -97,7 +97,7 @@ def parse_post_content(soup: BeautifulSoup, metadata: PostLink) -> Content:
 if __name__ == "__main__":
     import pickle
 
-    sample_text = PostLink(
+    sample_text = PostMetadata(
         id="z0oio5",
         author="Proper_Bodybuilder_2",
         timestamp=1669002333000,
@@ -110,7 +110,7 @@ if __name__ == "__main__":
         spoiler=False,
         type=PostType.Text,
     )
-    sample_link = PostLink(
+    sample_link = PostMetadata(
         id="z2bhbm",
         author="Counterhaters",
         timestamp=1669166866000,
@@ -123,7 +123,7 @@ if __name__ == "__main__":
         spoiler=False,
         type=PostType.Link,
     )
-    sample_img = PostLink(
+    sample_img = PostMetadata(
         id="z0ojwn",
         author="Different_Ad6979",
         timestamp=1669002431000,
@@ -136,7 +136,7 @@ if __name__ == "__main__":
         spoiler=False,
         type=PostType.Image,
     )
-    sample_gallery = PostLink(
+    sample_gallery = PostMetadata(
         id="z0728o",
         author="Different_Ad6979",
         timestamp=1668958500000,
@@ -149,7 +149,7 @@ if __name__ == "__main__":
         spoiler=False,
         type=PostType.Gallery,
     )
-    sample_vid = PostLink(
+    sample_vid = PostMetadata(
         id="z09a7r",
         author="Dry_Illustrator5642",
         timestamp=1668963979000,
@@ -168,9 +168,10 @@ if __name__ == "__main__":
     # with open("post_gallery.pickle", "wb") as fh:
     #     pickle.dump(resp, fh)
 
-    # Load Page snapshot.
+    # Load page snapshot.
     with open("post_gallery.pickle", "rb") as fh:
         resp: Response = pickle.load(fh)
 
     soup = BeautifulSoup(resp.content, "lxml")
-    parse_post_content(soup, sample_img)
+    c = parse_post_content(soup, sample_img)
+    print(c)
