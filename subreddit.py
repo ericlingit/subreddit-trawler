@@ -26,10 +26,6 @@ headers = {
     "Sec-GPC": "1",
 }
 
-# As a reminder to developers, we recommend that clients make no more than one
-# request every two seconds (http://github.com/reddit/reddit/wiki/API).
-RATE_LIMIT = 3.0
-
 
 class PostType(Enum):
     Text = "text"
@@ -107,10 +103,16 @@ def collect_links(all_posts: List[Tag]) -> List[PostMetadata]:
     return posts
 
 
-def walk_subreddit(url: str, processor: Callable[[PostMetadata], None]) -> None:
-    """Walk the subreddit at url until there are no more posts. Each post is
-    passed to processor for processing.
-    Advertisement and announcement posts are skipped.
+def walk_subreddit(
+    url: str, processor: Callable[[PostMetadata], None], rate_limit: float = 3.0
+) -> None:
+    """Walk the subreddit at `url` until there are no more posts. Each post is
+    passed to `processor` for processing. Advertisement and announcement posts
+    are skipped.
+
+    `rate_limit` specifies how long to sleep for after each request to Reddit.
+    To be respectful, a default 3-second sleep time is applied before making the
+    next request.
     """
     # Go to url.
     resp: Response = requests.get(url, headers=headers)
@@ -131,7 +133,7 @@ def walk_subreddit(url: str, processor: Callable[[PostMetadata], None]) -> None:
     # Process each post with processor function.
     for post in posts:
         processor(post)
-        time.sleep(RATE_LIMIT)
+        time.sleep(rate_limit)
 
     # Find the "next" button and its URL.
     next = soup.select("span.next-button a")
@@ -141,7 +143,7 @@ def walk_subreddit(url: str, processor: Callable[[PostMetadata], None]) -> None:
     next_url = next.pop().get("href", "")
 
     # Go to next page.
-    time.sleep(RATE_LIMIT)
+    time.sleep(rate_limit)
     walk_subreddit(next_url, processor)
 
 
