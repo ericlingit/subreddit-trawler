@@ -45,7 +45,11 @@ def parse_post_content(soup: BeautifulSoup, metadata: PostMetadata) -> Content:
 
     # Comments, including opening poster's comment (reply structure not preserved).
     maybe_comments = soup.select("div.entry div.usertext-body div.md p")
-    comments: List[str] = [p_tag.text.strip() for p_tag in maybe_comments]
+    comments: List[str] = [
+        p_tag.text.strip()
+        for p_tag in maybe_comments
+        if p_tag.text.strip() != "[removed]"
+    ]
 
     # OP video (get link from PostLink object)
     video: Optional[Video] = None
@@ -123,7 +127,7 @@ if __name__ == "__main__":
         spoiler=False,
         type=PostType.Link,
     )
-    sample_img = PostMetadata(
+    sample_image = PostMetadata(
         id="z0ojwn",
         author="Different_Ad6979",
         timestamp=1669002431000,
@@ -149,7 +153,7 @@ if __name__ == "__main__":
         spoiler=False,
         type=PostType.Gallery,
     )
-    sample_vid = PostMetadata(
+    sample_video = PostMetadata(
         id="z09a7r",
         author="Dry_Illustrator5642",
         timestamp=1668963979000,
@@ -164,14 +168,14 @@ if __name__ == "__main__":
     )
 
     # # Visit post
-    # resp = requests.get(sample_gallery.permalink, headers=headers)
-    # with open("post_gallery.pickle", "wb") as fh:
+    # resp = requests.get(sample_image.permalink, headers=headers)
+    # with open("post_image.pickle", "wb") as fh:
     #     pickle.dump(resp, fh)
 
     # Load page snapshot.
-    with open("post_gallery.pickle", "rb") as fh:
+    with open("post_image.pickle", "rb") as fh:
         resp: Response = pickle.load(fh)
 
     soup = BeautifulSoup(resp.content, "lxml")
-    c = parse_post_content(soup, sample_img)
+    c = parse_post_content(soup, sample_image)
     print(c)
