@@ -10,6 +10,7 @@ from subreddit_trawler.walker import PostMetadata, PostType
 
 @dataclass
 class Video:
+    id: str
     # Video and audio track are stored separately.
     video_track: str
     audio_track: str
@@ -62,10 +63,12 @@ def parse_post_content(raw_response: bytes, metadata: PostMetadata) -> Content:
     # OP video.
     video: Optional[Video] = None
     if metadata.type is PostType.Video:
+        v_id = metadata.url.split("/")[-1]
         # Transform from "https://v.redd.it/abc123xyz"
         # to  "https://v.redd.it/4huchegx4x0a1/DASH_720.mp4"
         # and "https://v.redd.it/4huchegx4x0a1/DASH_audio.mp4"
         video = Video(
+            id=v_id,
             video_track=f"{metadata.url}/DASH_720.mp4",
             audio_track=f"{metadata.url}/DASH_audio.mp4",
         )
