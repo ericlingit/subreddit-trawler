@@ -58,10 +58,16 @@ class PostMetadata:
         return self.to_json_str()
 
 
-def collect_links(all_posts: List[Tag]) -> List[PostMetadata]:
-    """Parse all_posts (a list of bs4.element.Tag objects) and return a list
-    of PostLink objects.
-    """
+def collect_links(soup: BeautifulSoup) -> List[PostMetadata]:
+    """Find and parse the BeautifulSoup object and return a list of PostLink objects."""
+    listing: List[Tag] = soup.find_all(class_="linklisting")
+    if len(listing) != 1:
+        raise Exception("could not locate the div tag with linklisting class attribute")
+    listing_div: Tag = listing.pop()
+    all_posts: List[Tag] = listing_div.find_all(class_="link")
+    if len(all_posts) < 1:
+        raise Exception("found no posts")
+
     # Collect links to posts.
     posts: List[PostMetadata] = []
     for post in all_posts:
@@ -119,16 +125,7 @@ def walk_subreddit(
     soup = BeautifulSoup(resp.content, "lxml")
 
     # Extract all links.
-    listing: List[Tag] = soup.find_all(class_="linklisting")
-    if len(listing) != 1:
-        raise Exception(
-            f"could not locate the div tag with linklisting class attribute: {url}"
-        )
-    listing_div: Tag = listing.pop()
-    all_links: List[Tag] = listing_div.find_all(class_="link")
-    if len(all_links) < 1:
-        raise Exception(f"found no posts: {url}")
-    posts = collect_links(all_links)
+    posts = collect_links(soup)
 
     # Process each post with processor function.
     for post in posts:
