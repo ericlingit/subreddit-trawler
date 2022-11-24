@@ -84,5 +84,8 @@ def test_parse_post_content():
         resp: Response = pickle.load(fh)
 
     c = parse_post_content(resp.content, sample_text)
+    assert c.title == "越南数字威权主义的悄然演变"
     assert len(c.comments) == 71
     assert c.flare == "政治经济"
+    assert c.images == []
+    assert c.video is None

@@ -22,3 +22,10 @@ def test_collect_links():
         assert p.permalink.startswith("https://old.reddit.com/r/China_irl")
         assert p.timestamp > 1660000000000
         assert p.url != ""
+
+
+# def test_walk_subreddit():
+#     # url = "https://old.reddit.com/r/China_irl/"
+#     # url = "https://old.reddit.com/r/CombatFootage/"
+#     url = "https://old.reddit.com/r/zenfone6/"
+#     walk_subreddit(url, print)

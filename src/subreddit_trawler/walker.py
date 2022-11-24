@@ -142,10 +142,3 @@ def walk_subreddit(
     # Go to next page.
     time.sleep(rate_limit)
     walk_subreddit(next_url, processor)
-
-
-if __name__ == "__main__":
-    # url = "https://old.reddit.com/r/China_irl/"
-    # url = "https://old.reddit.com/r/CombatFootage/"
-    url = "https://old.reddit.com/r/zenfone6/"
-    walk_subreddit(url, print)
