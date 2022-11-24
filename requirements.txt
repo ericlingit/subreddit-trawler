@@ -8,6 +8,9 @@ beautifulsoup4
 lxml
 requests
 
+# Testing.
+pytest
+
 # Packaging and dist.
 build
 twine
