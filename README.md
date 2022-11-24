@@ -1,4 +1,4 @@
-# Subreddit scraper
+# Subreddit trawler
 
 Scrape sub reddit posts using the old url `https://old.reddit.com`.
 
